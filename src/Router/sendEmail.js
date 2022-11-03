@@ -40,8 +40,8 @@ router.get('/send/mail/:id',async(req,res)=>{
 })
 
 router.get('/send/mail/all',async(req,res)=>{
-    cron.schedule('* * * * *', () => {
-        Email.find({isSend:false}).then((email) => {
+    Email.find({isSend:false}).then((email) => {
+        cron.schedule('* * * '+email.sendTimeStamp.getDay()+' *', () => {
             const mailOptions={
                 from:email[from],
                 to:email[to],
@@ -65,10 +65,14 @@ router.get('/send/mail/all',async(req,res)=>{
                 }
             })
             
-        }).catch((e) => {
-            console.log(e)
-            res.status(501).send(e)
-        })
-    });
+        });
+        
+    }).catch((e) => {
+        console.log(e)
+        res.status(501).send(e)
+    })
+    
     
 })
+
+module.exports = router
